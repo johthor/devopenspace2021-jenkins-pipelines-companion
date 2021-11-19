@@ -1,4 +1,4 @@
-package de.devopenspace.jenkins-pipelines;
+package de.devopenspace.jenkins;
 
 /**
  * Hello world!
