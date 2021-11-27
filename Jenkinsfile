@@ -10,6 +10,7 @@ pipeline {
             steps {
                 sh 'mvn -B -DskipTests clean package'
                 sh 'mvn -B checkstyle:checkstyle spotbugs:spotbugs pmd:pmd pmd:cpd'
+                mineRepository()
             }
         }
         stage('Test') {
