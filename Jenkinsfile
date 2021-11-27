@@ -9,17 +9,23 @@ pipeline {
         stage('Build') {
             steps {
                 sh 'mvn -B -DskipTests clean package'
+                sh 'mvn -B checkstyle:checkstyle spotbugs:spotbugs pmd:pmd pmd:cpd'
             }
         }
         stage('Test') {
             steps {
-                sh 'mvn package'
+                sh 'mvn -B test'
             }
         }
     }
     post {
         always {
             junit 'target/surefire-reports/*.xml'
+            archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
+            recordIssues(tools: [checkStyle(), pmdParser(), cpd(), spotBugs(useRankAsPriority: true)])
+        }
+        cleanup {
+            deleteDir()
         }
     }
 }
