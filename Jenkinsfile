@@ -15,7 +15,7 @@ pipeline {
         }
         stage('Test') {
             steps {
-                sh 'mvn -B test'
+                sh 'mvn -B -Dmaven.test.failure.ignore=true verify'
             }
         }
     }
@@ -24,6 +24,7 @@ pipeline {
             junit 'target/surefire-reports/*.xml'
             archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
             recordIssues(tools: [checkStyle(), pmdParser(), cpd(), spotBugs(useRankAsPriority: true)])
+            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'target/site/jacoco', reportFiles: 'index.html', reportName: 'JaCoCo HTML Report', reportTitles: ''])
         }
         cleanup {
             deleteDir()
