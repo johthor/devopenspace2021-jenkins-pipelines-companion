@@ -21,6 +21,26 @@ pipeline {
                 sh 'mvn -B -Dmaven.test.failure.ignore=true verify'
             }
         }
+        stage('Deploy - Staging') {
+            steps {
+                withCredentials([string(credentialsId: 'deployment-token-staging', variable: 'TOKEN')]) {
+                    sh './deploy.sh staging $TOKEN'
+                }
+            }
+        }
+        stage('Sanity check') {
+            steps {
+                input "Does the staging environment look ok?"
+                milestone label: "Sanity check"
+            }
+        }
+        stage('Deploy - Production') {
+            steps {
+                withCredentials([string(credentialsId: 'deployment-token-production', variable: 'TOKEN')]) {
+                    sh './deploy.sh production $TOKEN'
+                }
+            }
+        }
     }
     post {
         always {
