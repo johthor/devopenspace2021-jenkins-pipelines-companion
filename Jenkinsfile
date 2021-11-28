@@ -23,6 +23,7 @@ pipeline {
         }
         stage('Deploy - Staging') {
             steps {
+                milestone label: "Deployment Stages", ordinal: 1
                 withCredentials([string(credentialsId: 'deployment-token-staging', variable: 'TOKEN')]) {
                     sh './deploy.sh staging $TOKEN'
                 }
@@ -31,7 +32,7 @@ pipeline {
         stage('Sanity check') {
             steps {
                 input "Does the staging environment look ok?"
-                milestone label: "Sanity check", ordinal: 1
+                milestone label: "Sanity check", ordinal: 2
             }
         }
         stage('Deploy - Production') {
