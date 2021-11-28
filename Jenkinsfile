@@ -5,7 +5,7 @@ pipeline {
             args '-v $HOME/.m2:/root/.m2'
         }
     }
-    environmen {
+    environment {
         CI_SERVER = 'Jenkins'
     }
     stages {
