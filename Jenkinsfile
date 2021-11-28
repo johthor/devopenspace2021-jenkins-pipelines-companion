@@ -31,7 +31,7 @@ pipeline {
         stage('Sanity check') {
             steps {
                 input "Does the staging environment look ok?"
-                milestone label: "Sanity check"
+                milestone label: "Sanity check", ordinal: 1
             }
         }
         stage('Deploy - Production') {
