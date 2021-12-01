@@ -36,6 +36,9 @@ pipeline {
             }
         }
         stage('Deploy - Production') {
+            when {
+                branch 'release-*'
+            }
             steps {
                 withCredentials([string(credentialsId: 'deployment-token-production', variable: 'TOKEN')]) {
                     sh './deploy.sh production $TOKEN'
