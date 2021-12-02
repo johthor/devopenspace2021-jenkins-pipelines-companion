@@ -10,7 +10,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 withCredentials([string(credentialsId: "deployment-token-${params.DEPLOY_ENV}", variable: 'TOKEN')]) {
-                    sh "./deploy.sh ${params.DEPLOY_ENV} $TOKEN"
+                    sh './deploy.sh ${params.DEPLOY_ENV} $TOKEN'
                 }
             }
         }
