@@ -1,6 +1,8 @@
-if(!params.DEPLOY_ENV) {
+if (!params.DEPLOY_ENV) {
     error('Aborting the deployment - DEPLOY_ENV job parameter must be set')
 }
+
+def deploymentOutput = ''
 
 pipeline {
     agent {
@@ -16,13 +18,16 @@ pipeline {
                     currentBuild.displayName = currentBuild.displayName + ' ' + params.VERSION
                 }
                 withCredentials([string(credentialsId: "deployment-token-${params.DEPLOY_ENV}", variable: 'TOKEN')]) {
-                    sh './deploy.sh ' + params.DEPLOY_ENV + ' $TOKEN $VERSION'
+                    script {
+                        deploymentOutput = sh(returnStdout: true, script: './deploy.sh ' + params.DEPLOY_ENV + ' $TOKEN $VERSION').trim()
+                        echo deploymentOutput
+                    }
                 }
             }
         }
         stage('Announce Deployment') {
             parallel {
-                stage ('Pre-Production Deployments') {
+                stage('Pre-Production Deployments') {
                     when {
                         not {
                             equals expected: 'production', actual: params.DEPLOY_ENV
@@ -32,13 +37,14 @@ pipeline {
                         echo "Deployment to ${params.DEPLOY_ENV} was successful"
                     }
                 }
-                stage ('Production Deployments') {
+                stage('Production Deployments') {
                     when {
                         equals expected: 'production', actual: params.DEPLOY_ENV
                     }
                     steps {
                         echo 'Rejoice the deployment to PRODUCTION was successful'
                         echo 'We will now drink some champagne'
+                        echo 'Visit https://devopenspace.de/' + deploymentOutput.substring(deploymentOutput.lastIndexOf("\n")).trim()
                     }
                 }
             }

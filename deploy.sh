@@ -7,6 +7,8 @@ if [[ $1 == production ]]; then
 
     if [[ $2 == SuP3rS3cR3t ]]; then
         echo "Deployed version $3 to Production"
+        echo ""
+        echo "production/$3"
     else
         echo "Deployment failed: Wrong credentials"
         exit 1
@@ -17,7 +19,7 @@ elif [[ $1 == staging ]]; then
     sleep 5s
 
     if [[ $2 == sicher ]]; then
-        echo "Deploymed version $3 to Staging"
+        echo "Deployed version $3 to Staging"
     else
         echo "Deployment failed: Wrong credentials"
         exit 1
