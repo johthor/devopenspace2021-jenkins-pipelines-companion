@@ -10,14 +10,30 @@ pipeline {
         stage('Deploy') {
             steps {
                 withCredentials([string(credentialsId: "deployment-token-${params.DEPLOY_ENV}", variable: 'TOKEN')]) {
-                    sh './deploy.sh ${params.DEPLOY_ENV} $TOKEN'
+                    sh './deploy.sh ' + params.DEPLOY_ENV + ' $TOKEN'
                 }
             }
         }
-        stage('Deploy - Production') {
-            steps {
-                withCredentials([string(credentialsId: 'deployment-token-production', variable: 'TOKEN')]) {
-                    sh './deploy.sh production $TOKEN'
+        stage('Announce Deployment') {
+            parallel {
+                stage ('Pre-Production Deployments') {
+                    when {
+                        not {
+                            equals expected: 'production', actual: params.DEPLOY_ENV
+                        }
+                    }
+                    steps {
+                        echo "Deployment to ${params.DEPLOY_ENV} was successful"
+                    }
+                }
+                stage ('Production Deployments') {
+                    when {
+                        equals expected: 'production', actual: params.DEPLOY_ENV
+                    }
+                    steps {
+                        echo 'Rejoice the deployment to PRODUCTION was successful'
+                        echo 'We will now drink some champagne'
+                    }
                 }
             }
         }
