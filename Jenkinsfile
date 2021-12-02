@@ -24,8 +24,14 @@ pipeline {
         stage('Deploy - Staging') {
             steps {
                 milestone label: "Deployment Stages", ordinal: 1
-                withCredentials([string(credentialsId: 'deployment-token-staging', variable: 'TOKEN')]) {
-                    sh './deploy.sh staging $TOKEN'
+                script {
+                    shortCommit = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
+                    build([
+                        job: 'Tests/Deployment to Staging',
+                        parameters: [string(name: 'VERSION', value: shortCommit)],
+                        propagate: true,
+                        wait: true
+                    ])
                 }
             }
         }
@@ -40,8 +46,14 @@ pipeline {
                 branch 'release-*'
             }
             steps {
-                withCredentials([string(credentialsId: 'deployment-token-production', variable: 'TOKEN')]) {
-                    sh './deploy.sh production $TOKEN'
+                script {
+                    shortCommit = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
+                    build([
+                        job: 'Tests/Deployment to Production',
+                        parameters: [string(name: 'VERSION', value: shortCommit)],
+                        propagate: true,
+                        wait: true
+                    ])
                 }
             }
         }
