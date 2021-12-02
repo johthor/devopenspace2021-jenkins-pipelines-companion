@@ -11,10 +11,10 @@ pipeline {
     }
     stages {
         stage('Deploy') {
-            script {
-                currentBuild.displayName = currentBuild.displayName + ' ' + params.VERSION
-            }
             steps {
+                script {
+                    currentBuild.displayName = currentBuild.displayName + ' ' + params.VERSION
+                }
                 withCredentials([string(credentialsId: "deployment-token-${params.DEPLOY_ENV}", variable: 'TOKEN')]) {
                     sh './deploy.sh ' + params.DEPLOY_ENV + ' $TOKEN $VERSION'
                 }
