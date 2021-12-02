@@ -1,9 +1,12 @@
+if(!params.DEPLOY_ENV) {
+    error('Aborting the deployment - DEPLOY_ENV job parameter must be set')
+}
+
 pipeline {
     agent {
         label 'secure'
     }
     parameters {
-        string(name: 'DEPLOY_ENV', defaultValue: 'staging', description: 'Where to deploy')
         string(name: 'VERSION', defaultValue: 'v0', description: 'Which version to deploy')
     }
     stages {
