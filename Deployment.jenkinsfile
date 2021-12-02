@@ -1,0 +1,30 @@
+pipeline {
+    agent {
+        label 'secure'
+    }
+    parameters {
+        string(name: 'DEPLOY_ENV', defaultValue: 'staging', description: 'Where to deploy')
+        string(name: 'VERSION', defaultValue: 'v0', description: 'Which version to deploy')
+    }
+    stages {
+        stage('Deploy') {
+            steps {
+                withCredentials([string(credentialsId: "deployment-token-${params.DEPLOY_ENV}", variable: 'TOKEN')]) {
+                    sh "./deploy.sh ${params.DEPLOY_ENV} $TOKEN"
+                }
+            }
+        }
+        stage('Deploy - Production') {
+            steps {
+                withCredentials([string(credentialsId: 'deployment-token-production', variable: 'TOKEN')]) {
+                    sh './deploy.sh production $TOKEN'
+                }
+            }
+        }
+    }
+    post {
+        cleanup {
+            deleteDir()
+        }
+    }
+}
