@@ -1,6 +1,6 @@
 pipeline {
     environment{
-        CI_SERVER = "jenkins"
+        CI_SERVER = "Jenkins"
     }
     agent {
         docker {
